@@ -3,788 +3,423 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Entrepreneur Strength Assessment</title>
-<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Bricolage+Grotesque:wght@500;700&display=swap" rel="stylesheet">
-<style>
-*{box-sizing:border-box;margin:0;padding:0}
-:root{
-  --purple:#534AB7;--purple-light:#EEEDFE;--purple-dark:#3C3489;--purple-mid:#7F77DD;
-  --text:#1a1a2e;--text-muted:#64647a;--text-hint:#9999b0;
-  --bg:#f7f7fb;--surface:#fff;--border:#e2e2ef;--border-hover:#c5c5df;
-  --success:#10b981;--error:#ef4444;--warning:#f59e0b;
-  --radius:12px;--radius-sm:8px;
+<title>LinkedIn Profile Scorecard Pro</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script>
+tailwind.config = {
+  darkMode: 'class',
+  theme: { extend: {
+    colors: {
+      brand:{50:'#eef6fd',100:'#d6eafa',500:'#0A66C2',600:'#085196',700:'#063e74'},
+      ink:'#111827', teal:'#14B8A6', ok:'#10B981', warn:'#F59E0B', bad:'#EF4444', paper:'#F8FAFC'
+    },
+    fontFamily:{ disp:['"Space Grotesk"','system-ui','sans-serif'], body:['Inter','system-ui','sans-serif'] }
+  }}
 }
-html{scroll-behavior:smooth}
-body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;display:flex;flex-direction:column;align-items:center}
-.top-bar{width:100%;background:var(--surface);border-bottom:1px solid var(--border);padding:14px 24px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100}
-.logo{font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-size:17px;color:var(--purple);letter-spacing:-.02em}
-.prog-wrap{flex:1;max-width:320px;margin:0 20px}
-.prog-track{height:5px;background:var(--border);border-radius:99px;overflow:hidden}
-.prog-fill{height:5px;background:linear-gradient(90deg,var(--purple-mid),var(--purple));border-radius:99px;transition:width .5s cubic-bezier(.4,0,.2,1)}
-.prog-label{font-size:11px;color:var(--text-hint);margin-top:4px;text-align:right}
-.step-counter{font-size:13px;color:var(--text-muted);font-weight:500;white-space:nowrap}
-
-/* HERO */
-.hero{width:100%;max-width:640px;padding:60px 24px 32px;text-align:center}
-.hero-badge{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--purple);background:var(--purple-light);padding:5px 14px;border-radius:99px;margin-bottom:20px}
-.hero h1{font-family:'Bricolage Grotesque',sans-serif;font-size:clamp(26px,5vw,42px);font-weight:700;color:var(--text);line-height:1.15;letter-spacing:-.03em;margin-bottom:14px}
-.hero h1 span{color:var(--purple)}
-.hero p{font-size:15px;color:var(--text-muted);line-height:1.7;max-width:480px;margin:0 auto 24px}
-.hero-meta{display:flex;align-items:center;justify-content:center;gap:20px;font-size:13px;color:var(--text-hint);margin-bottom:32px;flex-wrap:wrap}
-.hero-meta span{display:flex;align-items:center;gap:5px}
-.hero-meta svg{width:14px;height:14px;stroke:var(--purple);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
-.deliverables{display:grid;grid-template-columns:1fr 1fr;gap:8px;text-align:left;max-width:480px;margin:0 auto 32px}
-.deli-item{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--text-muted);background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);padding:10px 12px}
-.deli-item svg{width:14px;height:14px;stroke:var(--success);fill:none;stroke-width:2.5;flex-shrink:0}
-.btn-primary{font-family:'Inter',sans-serif;font-size:15px;font-weight:600;padding:13px 34px;background:var(--purple);color:#fff;border:none;border-radius:var(--radius);cursor:pointer;transition:background .2s,transform .1s,box-shadow .2s;box-shadow:0 4px 20px rgba(83,74,183,.25)}
-.btn-primary:hover{background:var(--purple-dark);transform:translateY(-1px);box-shadow:0 6px 28px rgba(83,74,183,.35)}
-.btn-primary:active{transform:scale(.98)}
-.btn-primary:disabled{background:var(--border);color:var(--text-hint);cursor:not-allowed;box-shadow:none;transform:none}
-
-/* QA */
-.qa-wrap{width:100%;max-width:640px;padding:32px 24px 110px;display:none}
-.section-eyebrow{font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--purple);margin-bottom:10px}
-.slide{display:none;animation:slideIn .35s cubic-bezier(.4,0,.2,1)}
-.slide.active{display:block}
-.slide.back{animation:slideBack .35s cubic-bezier(.4,0,.2,1)}
-@keyframes slideIn{from{opacity:0;transform:translateX(24px)}to{opacity:1;transform:translateX(0)}}
-@keyframes slideBack{from{opacity:0;transform:translateX(-24px)}to{opacity:1;transform:translateX(0)}}
-.q-title{font-family:'Bricolage Grotesque',sans-serif;font-size:clamp(19px,4vw,25px);font-weight:700;color:var(--text);line-height:1.25;letter-spacing:-.02em;margin-bottom:8px}
-.q-sub{font-size:14px;color:var(--text-muted);line-height:1.65;margin-bottom:18px}
-textarea{width:100%;min-height:110px;padding:13px 15px;font-size:15px;font-family:'Inter',sans-serif;color:var(--text);background:var(--surface);border:1.5px solid var(--border);border-radius:var(--radius);resize:vertical;outline:none;transition:border-color .2s,box-shadow .2s;line-height:1.6}
-textarea:focus{border-color:var(--purple);box-shadow:0 0 0 4px rgba(83,74,183,.1)}
-textarea::placeholder{color:var(--text-hint)}
-.check-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-.check-item{display:flex;align-items:center;gap:10px;padding:10px 13px;background:var(--surface);border:1.5px solid var(--border);border-radius:var(--radius-sm);cursor:pointer;transition:border-color .2s,background .2s;font-size:13px;color:var(--text);user-select:none}
-.check-item:hover{border-color:var(--purple-mid);background:var(--purple-light)}
-.check-item.selected{border-color:var(--purple);background:var(--purple-light);color:var(--purple-dark)}
-.check-item input{accent-color:var(--purple);width:14px;height:14px;flex-shrink:0;pointer-events:none}
-.radio-grid{display:grid;gap:8px}
-.radio-item{display:flex;align-items:center;gap:12px;padding:12px 15px;background:var(--surface);border:1.5px solid var(--border);border-radius:var(--radius-sm);cursor:pointer;transition:border-color .2s,background .2s;font-size:14px;color:var(--text);user-select:none}
-.radio-item:hover{border-color:var(--purple-mid);background:var(--purple-light)}
-.radio-item.selected{border-color:var(--purple);background:var(--purple-light);color:var(--purple-dark);font-weight:500}
-.radio-item input{accent-color:var(--purple);width:15px;height:15px;flex-shrink:0;pointer-events:none}
-
-/* NAV */
-.nav-row{position:fixed;bottom:0;left:0;right:0;background:var(--surface);border-top:1px solid var(--border);padding:14px 24px;display:none;align-items:center;justify-content:space-between;gap:12px;z-index:100}
-.btn-back{font-family:'Inter',sans-serif;font-size:14px;font-weight:500;padding:10px 20px;background:transparent;color:var(--text-muted);border:1.5px solid var(--border);border-radius:var(--radius-sm);cursor:pointer;transition:border-color .2s,color .2s,background .2s}
-.btn-back:hover{border-color:var(--border-hover);color:var(--text);background:var(--bg)}
-.btn-next{font-family:'Inter',sans-serif;font-size:15px;font-weight:600;padding:11px 30px;background:var(--purple);color:#fff;border:none;border-radius:var(--radius-sm);cursor:pointer;transition:background .2s,transform .1s,box-shadow .2s;box-shadow:0 2px 12px rgba(83,74,183,.2)}
-.btn-next:hover{background:var(--purple-dark)}
-.btn-next:active{transform:scale(.98)}
-
-/* RESULT */
-.result-screen{max-width:560px;margin:0 auto;padding:40px 0 0}
-.result-icon{width:68px;height:68px;background:var(--purple-light);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 20px}
-.result-icon svg{width:32px;height:32px;stroke:var(--purple);fill:none;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
-.result-title{font-family:'Bricolage Grotesque',sans-serif;font-size:26px;font-weight:700;color:var(--text);letter-spacing:-.02em;margin-bottom:10px;text-align:center}
-.result-sub{font-size:14px;color:var(--text-muted);line-height:1.7;margin-bottom:24px;text-align:center}
-
-/* EMAIL FORM */
-.email-form{background:var(--surface);border:1.5px solid var(--border);border-radius:var(--radius);padding:20px;margin-bottom:20px}
-.email-form h3{font-size:15px;font-weight:600;color:var(--text);margin-bottom:4px}
-.email-form p{font-size:13px;color:var(--text-muted);margin-bottom:14px}
-.input-row{display:flex;gap:8px}
-.email-input{flex:1;padding:10px 13px;font-size:14px;font-family:'Inter',sans-serif;color:var(--text);background:var(--bg);border:1.5px solid var(--border);border-radius:var(--radius-sm);outline:none;transition:border-color .2s}
-.email-input:focus{border-color:var(--purple);box-shadow:0 0 0 3px rgba(83,74,183,.1)}
-.email-input::placeholder{color:var(--text-hint)}
-.name-input{width:100%;padding:10px 13px;font-size:14px;font-family:'Inter',sans-serif;color:var(--text);background:var(--bg);border:1.5px solid var(--border);border-radius:var(--radius-sm);outline:none;transition:border-color .2s;margin-bottom:8px}
-.name-input:focus{border-color:var(--purple);box-shadow:0 0 0 3px rgba(83,74,183,.1)}
-.name-input::placeholder{color:var(--text-hint)}
-
-/* REPORT */
-.report-container{display:none}
-.report-header{background:linear-gradient(135deg,var(--purple),var(--purple-mid));border-radius:var(--radius);padding:24px;margin-bottom:16px;color:#fff;text-align:center}
-.report-header h2{font-family:'Bricolage Grotesque',sans-serif;font-size:22px;font-weight:700;margin-bottom:6px}
-.report-header p{font-size:13px;opacity:.85}
-.report-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:18px;margin-bottom:12px}
-.report-card-label{font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--text-hint);margin-bottom:8px}
-.report-card-title{font-size:17px;font-weight:600;color:var(--purple);margin-bottom:8px}
-.report-card-body{font-size:14px;color:var(--text-muted);line-height:1.75}
-.report-card-body ul{padding-left:18px;margin-top:6px}
-.report-card-body li{margin-bottom:5px}
-.score-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:4px}
-.score-item{background:var(--bg);border-radius:var(--radius-sm);padding:12px}
-.score-label{font-size:12px;color:var(--text-muted);margin-bottom:6px}
-.score-bar-bg{height:6px;background:var(--border);border-radius:99px;overflow:hidden;margin-bottom:4px}
-.score-bar-fill{height:6px;border-radius:99px;transition:width 1s ease}
-.score-num{font-size:13px;font-weight:600;color:var(--text)}
-.niche-card{background:var(--bg);border:1px solid var(--border);border-radius:var(--radius-sm);padding:14px;margin-bottom:10px}
-.niche-card:last-child{margin-bottom:0}
-.niche-name{font-size:15px;font-weight:600;color:var(--purple);margin-bottom:6px}
-.niche-meta{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:8px}
-.niche-tag{font-size:11px;padding:3px 9px;border-radius:99px;font-weight:500}
-.tag-income{background:#d1fae5;color:#065f46}
-.tag-diff{background:#fef3c7;color:#92400e}
-.niche-why{font-size:13px;color:var(--text-muted);line-height:1.6;margin-bottom:6px}
-.niche-step{font-size:12px;color:var(--purple-dark);font-weight:500;background:var(--purple-light);padding:6px 10px;border-radius:var(--radius-sm)}
-.month-card{background:var(--bg);border-left:3px solid var(--purple);border-radius:0 var(--radius-sm) var(--radius-sm) 0;padding:12px 14px;margin-bottom:10px}
-.month-title{font-size:13px;font-weight:600;color:var(--purple);margin-bottom:6px}
-.month-items{font-size:13px;color:var(--text-muted);line-height:1.7}
-.brand-statement{background:linear-gradient(135deg,var(--purple-light),#f0effe);border:1px solid var(--purple-mid);border-radius:var(--radius);padding:18px;text-align:center;font-size:16px;font-weight:600;color:var(--purple-dark);line-height:1.5;font-style:italic}
-.action-btns{display:flex;gap:10px;margin-top:20px;flex-wrap:wrap}
-.btn-pdf{font-family:'Inter',sans-serif;font-size:14px;font-weight:600;padding:11px 24px;background:var(--purple);color:#fff;border:none;border-radius:var(--radius-sm);cursor:pointer;flex:1;transition:background .2s}
-.btn-pdf:hover{background:var(--purple-dark)}
-.btn-copy{font-family:'Inter',sans-serif;font-size:14px;font-weight:500;padding:11px 24px;background:transparent;color:var(--purple);border:1.5px solid var(--purple);border-radius:var(--radius-sm);cursor:pointer;flex:1;transition:background .2s}
-.btn-copy:hover{background:var(--purple-light)}
-.status-msg{font-size:13px;padding:10px 14px;border-radius:var(--radius-sm);margin-top:10px;display:none;text-align:center}
-.status-success{background:#d1fae5;color:#065f46;display:block}
-.status-error{background:#fee2e2;color:#991b1b;display:block}
-.status-loading{background:var(--purple-light);color:var(--purple-dark);display:block}
-.spinner{display:inline-block;width:14px;height:14px;border:2px solid var(--purple-light);border-top-color:var(--purple);border-radius:50%;animation:spin .7s linear infinite;margin-right:6px;vertical-align:middle}
-@keyframes spin{to{transform:rotate(360deg)}}
-.answers-summary{background:var(--bg);border:1px solid var(--border);border-radius:var(--radius);padding:16px;margin-top:12px}
-.answers-summary h4{font-size:13px;font-weight:600;color:var(--text-muted);margin-bottom:12px;text-transform:uppercase;letter-spacing:.05em}
-.answer-row{margin-bottom:10px;padding-bottom:10px;border-bottom:1px solid var(--border)}
-.answer-row:last-child{border-bottom:none;margin-bottom:0;padding-bottom:0}
-.answer-q{font-size:12px;font-weight:600;color:var(--text-hint);margin-bottom:3px}
-.answer-a{font-size:13px;color:var(--text-muted);line-height:1.5}
-@media(max-width:580px){.check-grid,.deliverables,.score-grid,.input-row{grid-template-columns:1fr}.input-row{flex-direction:column}.hero{padding:44px 18px 24px}.qa-wrap{padding:24px 18px 110px}.action-btns{flex-direction:column}}
+</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{ --b:#0A66C2; }
+  body{font-family:'Inter',system-ui,sans-serif}
+  .disp{font-family:'Space Grotesk',sans-serif}
+  .glass{background:rgba(255,255,255,.72);backdrop-filter:blur(14px);border:1px solid rgba(255,255,255,.6)}
+  .dark .glass{background:rgba(24,28,38,.7);border:1px solid rgba(255,255,255,.08)}
+  .card{transition:transform .25s ease, box-shadow .25s ease}
+  .card:hover{transform:translateY(-3px)}
+  .fade{animation:fade .5s ease both}
+  @keyframes fade{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+  .bar{transition:width 1s cubic-bezier(.2,.8,.2,1)}
+  @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+  ::selection{background:#0A66C2;color:#fff}
+  .grad{background:radial-gradient(1200px 500px at 10% -10%, #d6eafa 0%, transparent 55%),radial-gradient(900px 500px at 110% 0%, #ccfbef 0%, transparent 50%)}
+  .dark .grad{background:radial-gradient(1200px 500px at 10% -10%, rgba(10,102,194,.18) 0%, transparent 55%),radial-gradient(900px 500px at 110% 0%, rgba(20,184,166,.14) 0%, transparent 50%)}
+  @media print{ .noprint{display:none!important} body{background:#fff} .glass{background:#fff;border:1px solid #e5e7eb} }
 </style>
 </head>
-<body>
+<body class="bg-paper text-ink dark:bg-[#0b0e14] dark:text-slate-100 min-h-screen grad">
 
-<div class="top-bar">
-  <div class="logo">StrengthMap</div>
-  <div class="prog-wrap" id="prog-wrap" style="display:none">
-    <div class="prog-track"><div class="prog-fill" id="prog" style="width:0%"></div></div>
-    <div class="prog-label" id="prog-label">0 of 16 answered</div>
+<!-- NAV -->
+<header class="noprint sticky top-0 z-40 glass">
+  <div class="max-w-6xl mx-auto px-5 h-16 flex items-center justify-between">
+    <div class="flex items-center gap-2.5">
+      <div class="w-9 h-9 rounded-xl bg-brand-500 text-white grid place-items-center font-bold disp">in</div>
+      <span class="font-semibold disp tracking-tight">Profile Scorecard <span class="text-brand-500">Pro</span></span>
+    </div>
+    <div class="flex items-center gap-2">
+      <button id="darkBtn" class="px-3 py-2 rounded-lg text-sm font-medium glass hover:bg-brand-50 dark:hover:bg-white/5">🌙 Theme</button>
+      <a href="#form" class="px-3.5 py-2 rounded-lg text-sm font-semibold bg-brand-500 text-white hover:bg-brand-600">Start audit</a>
+    </div>
   </div>
-  <div class="step-counter" id="step-counter" style="display:none">Q <span id="cur-num">1</span> / 16</div>
-</div>
+</header>
 
 <!-- HERO -->
-<div class="hero" id="hero-screen">
-  <div class="hero-badge">âš¡ Free Â· 10 minutes</div>
-  <h1>Discover your <span>entrepreneur type</span> & best niche</h1>
-  <p>Answer 16 honest questions and receive a personalised report with your strength profile, business model, top niches & 90-day action plan.</p>
-  <div class="hero-meta">
-    <span><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>10 minutes</span>
-    <span><svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>Private & secure</span>
-    <span><svg viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="M22 4L12 14.01l-3-3"/></svg>Instant report</span>
+<section class="max-w-6xl mx-auto px-5 pt-14 pb-8 text-center fade">
+  <div class="inline-flex items-center gap-2 text-xs font-medium px-3 py-1.5 rounded-full glass mb-5">
+    <span class="w-2 h-2 rounded-full bg-teal"></span> Recruiter-grade · runs entirely in your browser
   </div>
-  <div class="deliverables">
-    <div class="deli-item"><svg viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg>Strength Profile</div>
-    <div class="deli-item"><svg viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg>Entrepreneur Type</div>
-    <div class="deli-item"><svg viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg>Top 5 Niches</div>
-    <div class="deli-item"><svg viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg>Personal Brand Statement</div>
-    <div class="deli-item"><svg viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg>Skill Gap Analysis</div>
-    <div class="deli-item"><svg viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg>90-Day Action Plan</div>
-  </div>
-  <button class="btn-primary" onclick="startAssessment()">Start the assessment â†’</button>
-</div>
+  <h1 class="disp text-4xl sm:text-6xl font-700 font-bold leading-[1.05] tracking-tight">
+    LinkedIn Profile<br><span class="text-brand-500">Assessment Pro</span>
+  </h1>
+  <p class="mt-5 max-w-xl mx-auto text-slate-600 dark:text-slate-300 text-lg">
+    Get a recruiter-grade profile audit in seconds. Add your details and discover exactly what is stopping opportunities — with a fix-it plan and rewrites.
+  </p>
+</section>
 
-<!-- QA -->
-<div class="qa-wrap" id="qa-wrap">
-  <div class="slide" data-id="0">
-    <div class="section-eyebrow">Section 1 â€” About you</div>
-    <div class="q-title">Why do you want to become successful in life?</div>
-    <div class="q-sub">Examples: financial freedom, supporting family, creating impact, personal growth.</div>
-    <textarea id="a0" placeholder="Share your honest reason..."></textarea>
-  </div>
-  <div class="slide" data-id="1">
-    <div class="section-eyebrow">Section 1 â€” About you</div>
-    <div class="q-title">Why do you want to become an entrepreneur?</div>
-    <div class="q-sub">What excites you most about entrepreneurship?</div>
-    <textarea id="a1" placeholder="What draws you to building your own path..."></textarea>
-  </div>
-  <div class="slide" data-id="2">
-    <div class="section-eyebrow">Section 1 â€” About you</div>
-    <div class="q-title">Why now?</div>
-    <div class="q-sub">What is motivating you to take action today instead of waiting another year?</div>
-    <textarea id="a2" placeholder="What has changed that makes this the right moment..."></textarea>
-  </div>
-  <div class="slide" data-id="3">
-    <div class="section-eyebrow">Section 1 â€” About you</div>
-    <div class="q-title">What has stopped you from starting before?</div>
-    <div class="q-sub">Select all that apply.</div>
-    <div class="check-grid" id="cg3">
-      <label class="check-item"><input type="checkbox" value="Lack of confidence"> Lack of confidence</label>
-      <label class="check-item"><input type="checkbox" value="Lack of money"> Lack of money</label>
-      <label class="check-item"><input type="checkbox" value="Lack of skills"> Lack of skills</label>
-      <label class="check-item"><input type="checkbox" value="Fear of failure"> Fear of failure</label>
-      <label class="check-item"><input type="checkbox" value="Fear of judgment"> Fear of judgment</label>
-      <label class="check-item"><input type="checkbox" value="No clear idea"> No clear idea</label>
-      <label class="check-item"><input type="checkbox" value="Family pressure"> Family pressure</label>
-      <label class="check-item"><input type="checkbox" value="Lack of mentorship"> Lack of mentorship</label>
-      <label class="check-item"><input type="checkbox" value="Time constraints"> Time constraints</label>
-      <label class="check-item"><input type="checkbox" value="Other"> Other</label>
-    </div>
-  </div>
-  <div class="slide" data-id="4">
-    <div class="section-eyebrow">Section 2 â€” Your strengths</div>
-    <div class="q-title">What activities make you lose track of time?</div>
-    <div class="q-sub">Think about hobbies, work tasks, or side projects where hours feel like minutes.</div>
-    <textarea id="a4" placeholder="When I'm doing this, time disappears..."></textarea>
-  </div>
-  <div class="slide" data-id="5">
-    <div class="section-eyebrow">Section 2 â€” Your strengths</div>
-    <div class="q-title">What do people usually ask you for help with?</div>
-    <div class="q-sub">Friends, family, colleagues â€” what do they come to you for?</div>
-    <textarea id="a5" placeholder="People always come to me when they need help with..."></textarea>
-  </div>
-  <div class="slide" data-id="6">
-    <div class="section-eyebrow">Section 2 â€” Your strengths</div>
-    <div class="q-title">What are your strongest skills today?</div>
-    <div class="q-sub">Select up to 5 skills.</div>
-    <div class="check-grid" id="cg6">
-      <label class="check-item"><input type="checkbox" value="Communication"> Communication</label>
-      <label class="check-item"><input type="checkbox" value="Writing"> Writing</label>
-      <label class="check-item"><input type="checkbox" value="Teaching"> Teaching</label>
-      <label class="check-item"><input type="checkbox" value="Sales"> Sales</label>
-      <label class="check-item"><input type="checkbox" value="Public Speaking"> Public Speaking</label>
-      <label class="check-item"><input type="checkbox" value="Technology"> Technology</label>
-      <label class="check-item"><input type="checkbox" value="Design"> Design</label>
-      <label class="check-item"><input type="checkbox" value="Leadership"> Leadership</label>
-      <label class="check-item"><input type="checkbox" value="Research"> Research</label>
-      <label class="check-item"><input type="checkbox" value="Problem Solving"> Problem Solving</label>
-      <label class="check-item"><input type="checkbox" value="Marketing"> Marketing</label>
-      <label class="check-item"><input type="checkbox" value="Social Media"> Social Media</label>
-      <label class="check-item"><input type="checkbox" value="Video Creation"> Video Creation</label>
-      <label class="check-item"><input type="checkbox" value="Networking"> Networking</label>
-      <label class="check-item"><input type="checkbox" value="Organizing"> Organizing</label>
-      <label class="check-item"><input type="checkbox" value="Coaching"> Coaching</label>
-      <label class="check-item"><input type="checkbox" value="Data Analysis"> Data Analysis</label>
-      <label class="check-item"><input type="checkbox" value="Coding"> Coding</label>
-      <label class="check-item"><input type="checkbox" value="Customer Service"> Customer Service</label>
-      <label class="check-item"><input type="checkbox" value="Project Management"> Project Management</label>
-    </div>
-  </div>
-  <div class="slide" data-id="7">
-    <div class="section-eyebrow">Section 2 â€” Your strengths</div>
-    <div class="q-title">If money wasn't a concern, what would you spend most of your time doing?</div>
-    <div class="q-sub">Imagine total freedom â€” how would you fill your days?</div>
-    <textarea id="a7" placeholder="I would spend my days..."></textarea>
-  </div>
-  <div class="slide" data-id="8">
-    <div class="section-eyebrow">Section 3 â€” Interests & passions</div>
-    <div class="q-title">Which topics do you naturally enjoy learning about?</div>
-    <div class="q-sub">Select all that apply.</div>
-    <div class="check-grid" id="cg8">
-      <label class="check-item"><input type="checkbox" value="Business"> Business</label>
-      <label class="check-item"><input type="checkbox" value="Technology"> Technology</label>
-      <label class="check-item"><input type="checkbox" value="AI"> AI</label>
-      <label class="check-item"><input type="checkbox" value="Education"> Education</label>
-      <label class="check-item"><input type="checkbox" value="Health"> Health</label>
-      <label class="check-item"><input type="checkbox" value="Fitness"> Fitness</label>
-      <label class="check-item"><input type="checkbox" value="Psychology"> Psychology</label>
-      <label class="check-item"><input type="checkbox" value="Personal Development"> Personal Development</label>
-      <label class="check-item"><input type="checkbox" value="Marketing"> Marketing</label>
-      <label class="check-item"><input type="checkbox" value="Finance"> Finance</label>
-      <label class="check-item"><input type="checkbox" value="Content Creation"> Content Creation</label>
-      <label class="check-item"><input type="checkbox" value="Design"> Design</label>
-      <label class="check-item"><input type="checkbox" value="Gaming"> Gaming</label>
-      <label class="check-item"><input type="checkbox" value="Travel"> Travel</label>
-      <label class="check-item"><input type="checkbox" value="Productivity"> Productivity</label>
-      <label class="check-item"><input type="checkbox" value="Leadership"> Leadership</label>
-      <label class="check-item"><input type="checkbox" value="E-commerce"> E-commerce</label>
-      <label class="check-item"><input type="checkbox" value="Real Estate"> Real Estate</label>
-      <label class="check-item"><input type="checkbox" value="Startups"> Startups</label>
-      <label class="check-item"><input type="checkbox" value="Other"> Other</label>
-    </div>
-  </div>
-  <div class="slide" data-id="9">
-    <div class="section-eyebrow">Section 3 â€” Interests & passions</div>
-    <div class="q-title">What creators, books, or podcasts do you follow?</div>
-    <div class="q-sub">YouTube channels, influencers, books, or podcasts you return to regularly.</div>
-    <textarea id="a9" placeholder="I regularly follow..."></textarea>
-  </div>
-  <div class="slide" data-id="10">
-    <div class="section-eyebrow">Section 3 â€” Interests & passions</div>
-    <div class="q-title">What kind of problems do you enjoy solving?</div>
-    <div class="q-sub">Think about challenges that energise rather than drain you.</div>
-    <textarea id="a10" placeholder="I get energised when I'm solving problems like..."></textarea>
-  </div>
-  <div class="slide" data-id="11">
-    <div class="section-eyebrow">Section 4 â€” Entrepreneurial fit</div>
-    <div class="q-title">Which statement sounds most like you?</div>
-    <div class="q-sub">Choose the one that resonates most deeply.</div>
-    <div class="radio-grid" id="rg11">
-      <label class="radio-item"><input type="radio" name="r11" value="Creator"> <span>I love creating things</span></label>
-      <label class="radio-item"><input type="radio" name="r11" value="Seller"> <span>I love selling things</span></label>
-      <label class="radio-item"><input type="radio" name="r11" value="Educator"> <span>I love teaching people</span></label>
-      <label class="radio-item"><input type="radio" name="r11" value="Leader"> <span>I love managing teams</span></label>
-      <label class="radio-item"><input type="radio" name="r11" value="Analyst"> <span>I love analysing data</span></label>
-      <label class="radio-item"><input type="radio" name="r11" value="Helper"> <span>I love helping people</span></label>
-      <label class="radio-item"><input type="radio" name="r11" value="Builder"> <span>I love building systems</span></label>
-    </div>
-  </div>
-  <div class="slide" data-id="12">
-    <div class="section-eyebrow">Section 4 â€” Entrepreneurial fit</div>
-    <div class="q-title">If you could build a business tomorrow, what would it be?</div>
-    <div class="q-sub">Dream freely â€” no constraints on money, skills, or time.</div>
-    <textarea id="a12" placeholder="My dream business would be..."></textarea>
-  </div>
-  <div class="slide" data-id="13">
-    <div class="section-eyebrow">Section 4 â€” Entrepreneurial fit</div>
-    <div class="q-title">Who would you most like to help?</div>
-    <div class="q-sub">Examples: students, parents, small businesses, startups, professionals, freelancers, creators.</div>
-    <textarea id="a13" placeholder="I want to help..."></textarea>
-  </div>
-  <div class="slide" data-id="14">
-    <div class="section-eyebrow">Section 5 â€” Future vision</div>
-    <div class="q-title">Where do you want to be in 5 years?</div>
-    <div class="q-sub">Describe your ideal lifestyle in as much detail as you can.</div>
-    <textarea id="a14" placeholder="In 5 years I see myself..."></textarea>
-  </div>
-  <div class="slide" data-id="15">
-    <div class="section-eyebrow">Section 5 â€” Future vision</div>
-    <div class="q-title">What would make you feel proud of yourself 10 years from now?</div>
-    <div class="q-sub">Think legacy, achievement, and impact â€” what would make you say "I did it"?</div>
-    <textarea id="a15" placeholder="Ten years from now I'd be proud if..."></textarea>
-  </div>
+<!-- FORM -->
+<section id="form" class="max-w-3xl mx-auto px-5 pb-16 fade">
+  <div class="glass rounded-3xl p-6 sm:p-8 shadow-xl">
+    <h2 class="disp text-xl font-semibold mb-1">Your profile</h2>
+    <p class="text-sm text-slate-500 dark:text-slate-400 mb-6">Screenshots are optional and stay on your device. The more text you give, the sharper the score.</p>
 
-  <!-- RESULT SLIDE -->
-  <div class="slide" data-id="16" id="result-slide">
-    <div class="result-screen" id="pre-report">
-      <div class="result-icon">
-        <svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
-      </div>
-      <div class="result-title">Assessment complete! ðŸŽ‰</div>
-      <div class="result-sub">Enter your details below to receive your personalised report by email and download it as PDF.</div>
-      <div class="email-form">
-        <h3>ðŸ“¬ Get your report delivered</h3>
-        <p>We'll email you the full report instantly â€” free, no spam.</p>
-        <input class="name-input" id="user-name" type="text" placeholder="Your full name">
-        <div class="input-row">
-          <input class="email-input" id="user-email" type="email" placeholder="your@email.com">
-          <button class="btn-primary" id="generate-btn" onclick="generateAndSend()">Generate Report â†’</button>
-        </div>
-        <div class="status-msg" id="status-msg"></div>
-      </div>
-    </div>
-    <div class="report-container" id="report-container"></div>
-  </div>
-</div>
+    <div class="grid sm:grid-cols-2 gap-5">
+      <label class="sm:col-span-2 block">
+        <span class="text-sm font-medium">Upload screenshot <span class="text-slate-400">(optional)</span></span>
+        <input id="shot" type="file" accept="image/*" class="mt-1.5 block w-full text-sm file:mr-3 file:py-2 file:px-4 file:rounded-lg file:border-0 file:bg-brand-50 file:text-brand-700 dark:file:bg-white/10 dark:file:text-brand-100 cursor-pointer">
+      </label>
+      <img id="preview" class="sm:col-span-2 hidden rounded-xl border border-slate-200 dark:border-white/10 max-h-52 object-contain bg-white/40">
 
-<div class="nav-row" id="nav-row">
-  <button class="btn-back" id="btn-back" onclick="go(-1)">â† Back</button>
-  <button class="btn-next" id="btn-next" onclick="go(1)">Next â†’</button>
-</div>
+      <label class="block"><span class="text-sm font-medium">Name</span>
+        <input id="name" class="inp" placeholder="Aisha Khan"></label>
+      <label class="block"><span class="text-sm font-medium">Current headline</span>
+        <input id="headline" class="inp" placeholder="AI Web Developer | Helping startups ship with automation"></label>
+
+      <label class="block"><span class="text-sm font-medium">Who are you?</span>
+        <input id="who" class="inp" placeholder="A frontend developer & AI builder"></label>
+      <label class="block"><span class="text-sm font-medium">What do you do?</span>
+        <input id="what" class="inp" placeholder="Build fast, modern websites with AI tools"></label>
+
+      <label class="block"><span class="text-sm font-medium">Who do you help?</span>
+        <input id="help" class="inp" placeholder="Early-stage startups & founders"></label>
+      <label class="block"><span class="text-sm font-medium">What problem do you solve?</span>
+        <input id="problem" class="inp" placeholder="Slow, expensive web builds that miss launch dates"></label>
+
+      <label class="sm:col-span-2 block"><span class="text-sm font-medium">About / summary text <span class="text-slate-400">(paste yours)</span></span>
+        <textarea id="about" rows="4" class="inp" placeholder="Paste your current About section, or a short bio."></textarea></label>
+
+      <label class="block"><span class="text-sm font-medium">Key skills <span class="text-slate-400">(comma separated)</span></span>
+        <input id="skills" class="inp" placeholder="React, Tailwind, Python, AI, Automation"></label>
+      <label class="block"><span class="text-sm font-medium">Career goal</span>
+        <select id="goal" class="inp">
+          <option>Internship</option><option>Job</option><option>Freelancing</option>
+          <option>Personal Brand</option><option>Career Growth</option>
+        </select></label>
+    </div>
+
+    <button id="run" class="mt-7 w-full py-3.5 rounded-xl bg-brand-500 hover:bg-brand-600 text-white font-semibold disp tracking-tight text-lg shadow-lg shadow-brand-500/20">
+      Run my audit →
+    </button>
+    <p class="text-xs text-center text-slate-400 mt-3">No account. No data leaves this page.</p>
+  </div>
+</section>
+
+<!-- REPORT -->
+<main id="report" class="hidden max-w-6xl mx-auto px-5 pb-24"></main>
+
+<footer class="noprint text-center text-xs text-slate-400 py-10">Built as a single HTML file · Scoring runs locally in your browser.</footer>
+
+<style>
+.inp{margin-top:.35rem;width:100%;border-radius:.7rem;border:1px solid #e2e8f0;background:rgba(255,255,255,.7);padding:.6rem .8rem;font-size:.9rem;outline:none}
+.inp:focus{border-color:#0A66C2;box-shadow:0 0 0 3px rgba(10,102,194,.15)}
+.dark .inp{background:rgba(255,255,255,.05);border-color:rgba(255,255,255,.12);color:#e2e8f0}
+</style>
 
 <script>
-// EmailJS init
-emailjs.init('oPQHvGTPSQBlv4Zzd');
-const OWNER_EMAIL = 'ahmed.kabirhashmi@gmail.com';
-const SERVICE_ID = 'service_jdnbsa9';
-const TEMPLATE_ID = 'template_e256ewc';
+/* ---------- Theme ---------- */
+const root=document.documentElement;
+if(matchMedia('(prefers-color-scheme:dark)').matches) root.classList.add('dark');
+darkBtn.onclick=()=>root.classList.toggle('dark');
 
-const TOTAL = 16;
-let cur = 0, going = 1;
-const slides = document.querySelectorAll('.slide');
+/* ---------- Screenshot preview ---------- */
+shot.onchange=e=>{const f=e.target.files[0];if(!f)return;const u=URL.createObjectURL(f);preview.src=u;preview.classList.remove('hidden');};
 
-function startAssessment(){
-  document.getElementById('hero-screen').style.display='none';
-  document.getElementById('qa-wrap').style.display='block';
-  document.getElementById('nav-row').style.display='flex';
-  document.getElementById('prog-wrap').style.display='block';
-  document.getElementById('step-counter').style.display='block';
-  updateUI(); initInteractives();
+/* ---------- Scoring helpers ---------- */
+const KEYWORDS=['developer','engineer','design','ai','marketing','data','product','manager','founder','consultant','frontend','backend','python','react','automation','startup','growth','seo','content','strategy','analyst','cloud','devops','sales','finance','ux','ui','brand'];
+const ACTION=['built','led','launched','shipped','grew','increased','reduced','delivered','created','scaled','managed','designed','automated','helped'];
+const wc=s=>(s||'').trim()?(s||'').trim().split(/\s+/).length:0;
+const has=(s,arr)=>arr.filter(k=>(s||'').toLowerCase().includes(k)).length;
+const hasNum=s=>/\d/.test(s||'');
+const clamp=(n)=>Math.max(0,Math.min(10,n));
+
+function analyze(d){
+  const cats={};
+  // 1 Photo (proxy: screenshot presence + name)
+  cats.photo={w:.10,label:'Profile Photo',score:clamp((d.shot?6:3)+(d.name?2:0)+2),
+    rec:d.shot?'Use a high-resolution headshot: face fills ~60% of frame, soft background, genuine expression, professional attire.':'No photo detected. Add a clear, friendly headshot — profiles with photos get up to 14× more views.'};
+  // 2 Banner
+  cats.banner={w:.10,label:'Banner',score:clamp(d.shot?6:4),
+    rec:'Use the banner as a billboard: your value line + niche + a subtle CTA (e.g. "Helping startups ship faster"). Keep text in the safe zone away from the photo overlap.'};
+  // 3 Headline 15
+  let h=2; if(wc(d.headline)>=6)h+=2; if(d.headline.includes('|'))h+=1; h+=Math.min(3,has(d.headline,KEYWORDS)); if(/help|build|grow|design|solve/i.test(d.headline))h+=2;
+  cats.headline={w:.15,label:'Headline',score:clamp(h),
+    rec:h>=8?'Strong. A/B test outcome-focused variants below.':'Move beyond a job title. Pattern: [Role] helping [audience] achieve [outcome] with [skill]. Pack 2–3 searchable keywords up front.'};
+  // 4 About 15
+  let a=1; const aw=wc(d.about); if(aw>=40)a+=3; else if(aw>=15)a+=1.5; a+=Math.min(2,has(d.about,KEYWORDS)); if(hasNum(d.about))a+=1.5; if(has(d.about,ACTION))a+=1.5; if(d.problem)a+=1;
+  cats.about={w:.15,label:'About Section',score:clamp(a),
+    rec:aw<40?'Expand to 3–4 short paragraphs: hook → what you do & for whom → proof/results → call to action. Write in first person.':'Solid base. Add 1–2 quantified results and a closing CTA line.'};
+  // 5 Experience (proxy from action verbs + problem)
+  let e=3; e+=has(d.about+' '+d.what,ACTION); if(hasNum(d.about))e+=1.5; if(d.problem)e+=1.5;
+  cats.experience={w:.10,label:'Experience',score:clamp(e),
+    rec:'Each role: 2–4 bullets that start with an action verb and end with a measurable result (%, $, time saved, users).'};
+  // 6 Education
+  cats.education={w:.05,label:'Education',score:clamp(d.shot?7:6),
+    rec:'List degree, institution, dates, and relevant coursework, societies, or projects — especially valuable early-career.'};
+  // 7 Skills 10
+  const sk=(d.skills||'').split(',').map(s=>s.trim()).filter(Boolean);
+  let s=2+Math.min(5,sk.length*0.4)+Math.min(3,has(d.skills,KEYWORDS));
+  cats.skills={w:.10,label:'Skills',score:clamp(s),
+    rec:sk.length<10?'Add up to 50 skills; pin your top 3 most-relevant. Recruiters filter by skills, so include exact tool names.':'Good coverage. Reorder so your top 3 match your target role.'};
+  // 8 SEO 10
+  const corpus=[d.headline,d.about,d.what,d.who,d.skills].join(' ');
+  let seo=2+Math.min(5,has(corpus,KEYWORDS))+(d.headline?1.5:0)+(d.help?1.5:0);
+  cats.seo={w:.10,label:'SEO',score:clamp(seo),
+    rec:'Repeat your 3 core keywords across headline, About, and skills. LinkedIn search weights the headline heavily — lead with role + niche.'};
+  // 9 Content readiness 5
+  let c=2+(d.help?2:0)+(d.problem?2:0)+(aw>=30?2:0);
+  cats.content={w:.05,label:'Content Readiness',score:clamp(c),
+    rec:'You have a clear niche to post about. Pick 2 themes (lessons + behind-the-scenes) and commit to 3 posts/week.'};
+  // 10 Personal brand 10
+  let pb=2+(d.headline.includes('|')?1:0)+(d.help?2:0)+(d.problem?2:0)+Math.min(2,has(corpus,KEYWORDS))+(d.name?1:0);
+  cats.brand={w:.10,label:'Personal Branding',score:clamp(pb),
+    rec:'Your one-liner should be repeatable: "I help [who] do [what]." Use the same phrasing in headline, banner, and About for memorability.'};
+
+  let overall=0; Object.values(cats).forEach(c=>overall+=c.score*10*c.w);
+  return {cats, overall:Math.round(overall)};
 }
 
-function initInteractives(){
-  document.querySelectorAll('.check-item').forEach(lbl=>{
-    lbl.addEventListener('click',()=>{
-      const cb=lbl.querySelector('input');
-      const pid=lbl.closest('.slide').dataset.id;
-      if(pid==='6'){
-        const checked=document.querySelectorAll('#cg6 input:checked');
-        if(!cb.checked&&checked.length>=5)return;
-      }
-      setTimeout(()=>lbl.classList.toggle('selected',cb.checked),0);
-    });
-  });
-  document.querySelectorAll('.radio-item').forEach(lbl=>{
-    lbl.addEventListener('click',()=>{
-      const grp=lbl.closest('[id^="rg"]');
-      grp.querySelectorAll('.radio-item').forEach(l=>l.classList.remove('selected'));
-      setTimeout(()=>{if(lbl.querySelector('input').checked)lbl.classList.add('selected');},0);
-    });
-  });
-}
+const statusOf=s=>s>=95?['Elite','#10B981']:s>=85?['Strong','#10B981']:s>=70?['Good','#0A66C2']:s>=55?['Average','#F59E0B']:['Needs Major Improvement','#EF4444'];
+const color=s=>s>=8?'#10B981':s>=6.5?'#0A66C2':s>=5?'#F59E0B':'#EF4444';
 
-function updateUI(){
-  slides.forEach((s,i)=>{
-    s.classList.remove('active','back');
-    if(i===cur){s.classList.add('active');if(going<0)s.classList.add('back');}
-  });
-  const pct=Math.round((cur/TOTAL)*100);
-  document.getElementById('prog').style.width=pct+'%';
-  document.getElementById('prog-label').textContent=cur+' of '+TOTAL+' answered';
-  document.getElementById('cur-num').textContent=cur<TOTAL?cur+1:TOTAL;
-  document.getElementById('btn-back').style.visibility=cur===0?'hidden':'visible';
-  if(cur>=TOTAL){document.getElementById('nav-row').style.display='none';}
-  else{document.getElementById('nav-row').style.display='flex';document.getElementById('btn-next').textContent=cur===TOTAL-1?'Finish âœ“':'Next â†’';}
-  window.scrollTo({top:0,behavior:'smooth'});
-}
-
-function go(dir){going=dir;cur=Math.max(0,Math.min(TOTAL,cur+dir));updateUI();}
-
-function getAnswers(){
-  const a={};
-  document.querySelectorAll('textarea').forEach(t=>{if(t.value.trim())a[t.id]=t.value.trim();});
-  ['cg3','cg6','cg8'].forEach(id=>{
-    const el=document.getElementById(id);
-    if(el){const v=[...el.querySelectorAll('input:checked')].map(i=>i.value);if(v.length)a[id]=v.join(', ');}
-  });
-  const r=[...document.querySelectorAll('input[name="r11"]')].find(r=>r.checked);
-  if(r)a.r11=r.value;
-  return a;
-}
-
-// â”€â”€â”€ REPORT ENGINE â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-function generateReport(a){
-  const skills=(a.cg6||'').split(', ').filter(Boolean);
-  const interests=(a.cg8||'').split(', ').filter(Boolean);
-  const blockers=(a.cg3||'').split(', ').filter(Boolean);
-  const type=a.r11||'Creator';
-
-  // Entrepreneur type mapping
-  const typeMap={
-    Creator:{label:'Creator',icon:'ðŸŽ¨',model:'Content Creator',desc:'You are driven by self-expression and originality. You thrive when building things that didn\'t exist before â€” content, products, brands, or ideas. Your superpower is turning imagination into reality.'},
-    Educator:{label:'Educator',icon:'ðŸ“š',model:'Coaching / Course Creation',desc:'You are a natural teacher. You gain deep satisfaction from helping others understand complex topics. Your superpower is simplifying knowledge and transforming lives through learning.'},
-    Seller:{label:'Consultant',icon:'ðŸ’¼',model:'Consulting / Agency',desc:'You have a rare ability to persuade, connect, and close. You understand people\'s needs and can communicate value like few others. Your superpower is turning conversations into opportunities.'},
-    Helper:{label:'Coach',icon:'ðŸ¤',model:'Coaching / Freelancing',desc:'You are deeply empathetic and service-oriented. You find meaning in solving other people\'s problems. Your superpower is making people feel understood and guiding them to breakthroughs.'},
-    Builder:{label:'Builder',icon:'âš™ï¸',model:'SaaS / Agency / Freelancing',desc:'You love creating systems, processes, and scalable solutions. You think in frameworks and enjoy making things run efficiently. Your superpower is building things that work without you.'},
-    Leader:{label:'Leader',icon:'ðŸ†',model:'Agency / Community Building',desc:'You are a natural organiser and motivator. You see the big picture and inspire others to act. Your superpower is building teams and cultures that produce extraordinary results.'},
-    Analyst:{label:'Analyst',icon:'ðŸ“Š',model:'Consulting / Data Services',desc:'You are a deep thinker who turns data into decisions. You see patterns others miss and love solving complex problems with logic. Your superpower is precision and evidence-based strategy.'}
-  };
-  const eType=typeMap[type]||typeMap['Creator'];
-
-  // Niche engine
-  const nicheDB=[
-    {name:'AI Tools & Automation Consulting',topics:['AI','Technology','Business','Productivity'],skills:['Technology','Problem Solving','Coding','Research'],income:'$3,000â€“$15,000/mo',diff:'Intermediate',step:'Pick one AI tool (ChatGPT, Notion AI, Zapier) and create a free tutorial or case study this week.'},
-    {name:'Personal Branding & LinkedIn Growth',topics:['Marketing','Content Creation','Personal Development','Business'],skills:['Writing','Social Media','Communication','Marketing'],income:'$2,000â€“$10,000/mo',diff:'Beginner',step:'Optimise your LinkedIn profile today and post your first piece of content this week.'},
-    {name:'Freelance Digital Marketing Agency',topics:['Marketing','Business','E-commerce','Startups'],skills:['Marketing','Social Media','Communication','Sales'],income:'$2,500â€“$12,000/mo',diff:'Intermediate',step:'Land your first client by offering a free 30-minute marketing audit to 5 local businesses.'},
-    {name:'Online Education & Course Creation',topics:['Education','Personal Development','Business','Psychology'],skills:['Teaching','Writing','Communication','Public Speaking'],income:'$1,500â€“$20,000/mo',diff:'Beginner',step:'Outline a 5-module course on your strongest skill and share the outline on LinkedIn today.'},
-    {name:'Health & Wellness Coaching',topics:['Health','Fitness','Psychology','Personal Development'],skills:['Coaching','Communication','Teaching','Customer Service'],income:'$2,000â€“$8,000/mo',diff:'Beginner',step:'Get certified on a free platform (Coursera, Alison) and offer 3 free discovery calls this week.'},
-    {name:'E-commerce & Dropshipping',topics:['E-commerce','Business','Marketing','Finance'],skills:['Marketing','Social Media','Sales','Research'],income:'$1,000â€“$25,000/mo',diff:'Intermediate',step:'Research your top 3 product niches on TikTok today and validate demand before investing.'},
-    {name:'Tech Freelancing (Web/App Dev)',topics:['Technology','AI','Startups','Business'],skills:['Coding','Technology','Problem Solving','Project Management'],income:'$3,000â€“$20,000/mo',diff:'Advanced',step:'Create a portfolio with 2â€“3 sample projects on GitHub and apply to 5 Upwork jobs today.'},
-    {name:'Business & Productivity Coaching',topics:['Business','Productivity','Leadership','Personal Development'],skills:['Coaching','Leadership','Problem Solving','Communication'],income:'$2,000â€“$12,000/mo',diff:'Beginner',step:'Post a LinkedIn article sharing your top 3 productivity tips and invite readers to a free call.'},
-    {name:'Graphic Design & Visual Branding',topics:['Design','Content Creation','Marketing','Business'],skills:['Design','Creativity','Social Media','Marketing'],income:'$1,500â€“$8,000/mo',diff:'Beginner',step:'Create 3 sample brand identity projects using free tools (Canva, Figma) and post them today.'},
-    {name:'Finance & Investment Education',topics:['Finance','Business','Personal Development','Real Estate'],skills:['Research','Data Analysis','Writing','Teaching'],income:'$2,000â€“$15,000/mo',diff:'Intermediate',step:'Start a weekly newsletter sharing one financial tip and post it on LinkedIn this Friday.'},
-    {name:'Video Content & YouTube Growth',topics:['Content Creation','Personal Development','Marketing','Education'],skills:['Video Creation','Communication','Social Media','Teaching'],income:'$500â€“$30,000/mo',diff:'Beginner',step:'Record and upload your first YouTube video â€” keep it under 5 minutes on a topic you know well.'},
-    {name:'Leadership & Team Building Consulting',topics:['Leadership','Business','Psychology','Personal Development'],skills:['Leadership','Communication','Coaching','Project Management'],income:'$3,000â€“$18,000/mo',diff:'Advanced',step:'Write a LinkedIn post about a leadership lesson you\'ve learned and invite companies to connect.'}
+/* ---------- Rewrites & plans ---------- */
+function headlines(d){
+  const role=d.who||'Professional', aud=d.help||'teams', out=d.problem?('solving '+d.problem.toLowerCase()):'driving results', skill=(d.skills||'').split(',')[0]||'modern tools';
+  const w=d.what||'building great work';
+  return [
+    `${role} | Helping ${aud} by ${w.toLowerCase()}`,
+    `${role} • ${w} for ${aud}`,
+    `I help ${aud} ${out} | ${skill}`,
+    `${role} turning ${aud}'s challenges into outcomes with ${skill}`,
+    `${w} for ${aud} — ${role.split(' ')[0]} focused on impact`
   ];
-
-  function scoreNiche(n){
-    let s=0;
-    n.topics.forEach(t=>{if(interests.includes(t))s+=2;});
-    n.skills.forEach(sk=>{if(skills.includes(sk))s+=3;});
-    return s;
-  }
-  const ranked=[...nicheDB].map(n=>({...n,score:scoreNiche(n)})).sort((a,b)=>b.score-a.score).slice(0,5);
-  if(ranked.length<5){
-    const extras=nicheDB.filter(n=>!ranked.find(r=>r.name===n.name));
-    while(ranked.length<5&&extras.length)ranked.push(extras.shift());
-  }
-
-  // Scores
-  const confScore=Math.min(95,60+skills.length*3+(blockers.includes('Lack of confidence')?-10:5)+(a.a0?5:0));
-  const readScore=Math.min(95,55+skills.length*2+(a.a12?10:0)+(a.a1?5:0));
-  const skillScore=Math.min(95,50+skills.length*4+(interests.length*1.5));
-  const nicheScore=Math.min(95,ranked[0]?40+ranked[0].score*2:50);
-  const brandScore=Math.min(95,50+(a.a13?10:0)+(a.a0?8:0)+(skills.includes('Social Media')?10:0)+(skills.includes('Communication')?8:0));
-
-  // Brand statement
-  const audience=a.a13||'aspiring entrepreneurs';
-  const goal=a.a0||'achieve their goals';
-  const method=skills.length>0?skills.slice(0,2).join(' & ').toLowerCase():'proven strategies';
-  const brand1=`I help ${audience} ${goal} through ${method}.`;
-  const brand2=`I help ${audience} build a profitable business using ${ranked[0]?ranked[0].name.toLowerCase():'digital skills & smart strategy'}.`;
-
-  // Skill gap
-  const allSkills=['Communication','Writing','Teaching','Sales','Public Speaking','Technology','Design','Leadership','Research','Problem Solving','Marketing','Social Media','Video Creation','Networking','Organizing','Coaching','Data Analysis','Coding','Customer Service','Project Management'];
-  const missing=allSkills.filter(s=>!skills.includes(s)).slice(0,4);
-
-  // Blockers summary
-  const blockerInsight=blockers.length?`You've previously been held back by: ${blockers.join(', ')}. Awareness of these is already half the battle â€” let's address them head-on in your 90-day plan.`:`You've shown strong awareness of your starting point â€” that self-knowledge is a real advantage.`;
-
-  // 90-day plan based on type
-  const plans={
-    Creator:{m1:['Choose your primary content platform (YouTube, LinkedIn, Instagram)','Create your personal brand identity and profile','Produce your first 5 pieces of content','Study your top 3 competitors in your niche','Join 2 online communities in your niche'],m2:['Post consistently 3x per week','Engage daily with your audience (comments, DMs)','Collaborate with one other creator','Build your email list with a free lead magnet','Analyse what content performs best'],m3:['Launch a paid product, service, or sponsorship','Repurpose top content across platforms','Hit your first monetisation milestone','Document your process and results','Set goals for Month 4â€“6']},
-    Educator:{m1:['Identify your course topic based on your top skill','Outline a 5-module beginner course','Create a free mini-lesson and post it on LinkedIn','Build a landing page with a free email opt-in','Research what people are paying to learn in your niche'],m2:['Record and edit your first 3 course modules','Launch a beta version at a discounted price to 10 students','Collect testimonials and feedback','Create weekly educational content (posts/reels/videos)','Build an email list of 100+ subscribers'],m3:['Launch full course publicly with a proper sales page','Run a launch campaign (email + social)','Achieve first $1,000 in course sales','Set up automated email sequences','Plan your second course or coaching offer']},
-    default:{m1:['Define your niche and ideal client avatar clearly','Create or optimise your LinkedIn and professional profiles','Reach out to 10 potential clients or partners','Build a simple portfolio or case study','Join one mastermind or community in your space'],m2:['Secure your first paying client or project','Deliver exceptional results and get a testimonial','Launch a simple website or landing page','Create weekly content demonstrating your expertise','Build a referral or outreach system'],m3:['Scale to 2â€“3 active clients','Document your service process for efficiency','Raise your prices based on results delivered','Set a 6-month revenue target','Automate or outsource one task in your workflow']}
+}
+function about(d,type){
+  const who=d.who||'a builder', what=d.what||'create high-impact work', help=d.help||'teams and clients', prob=d.problem||'real, costly problems';
+  const intros={
+    Recruiter:`I'm ${who} who helps ${help} ${what.toLowerCase()}.`,
+    Client:`If you're ${help.toLowerCase()} struggling with ${prob.toLowerCase()}, I can help.`,
+    'Personal Brand':`I believe ${help.toLowerCase()} deserve better than ${prob.toLowerCase()} — so I ${what.toLowerCase()}.`
   };
-  const plan=plans[type]||plans.default;
+  return `${intros[type]}\n\nWhat I focus on: ${what}. I work closely with ${help} to ${d.problem?('solve '+prob.toLowerCase()):'deliver measurable outcomes'}.\n\nWhat sets me apart: a bias for action and results you can measure. ${d.skills?('Core tools: '+d.skills+'.'):''}\n\n→ ${type==='Client'?'Let\'s talk — send me a message.':'Open to '+d.goal.toLowerCase()+' opportunities. Reach out.'}`;
+}
+const SKILLBANK=['Communication','Problem Solving','Project Management','Data Analysis','React','JavaScript','Python','TailwindCSS','UI/UX Design','SEO','Content Strategy','Automation','AI Tools','Prompt Engineering','Leadership','Public Speaking','Figma','Git','Agile','Stakeholder Management','Copywriting','Growth Marketing','Cloud','APIs','Strategy'];
+function skillRecs(d){const have=(d.skills||'').toLowerCase();return SKILLBANK.filter(s=>!have.includes(s.toLowerCase())).slice(0,25);}
 
-  return {eType,ranked,scores:{conf:Math.round(confScore),ready:Math.round(readScore),skill:Math.round(skillScore),niche:Math.round(nicheScore),brand:Math.round(brandScore)},brand1,brand2,skills,missing,blockerInsight,plan,a};
+const HOOKS=['The mistake I see most','What nobody tells you about','A 2-minute lesson on','Behind the scenes of','How I approach','3 things I wish I knew about','An honest take on','The simplest way to','Why I stopped','A quick win for'];
+const CTAS=['What would you add?','Agree or disagree?','Save this for later.','DM me if this helped.','Follow for more.','Drop a 👍 if useful.'];
+function contentPlan(d){
+  const topic=d.what||d.who||'your craft', niche=d.help||'your audience';
+  const themes=['lesson learned','client win','tool walkthrough','myth busted','process breakdown','beginner tip','industry trend','personal story','quick framework','Q&A'];
+  const arr=[];
+  for(let i=1;i<=30;i++){
+    const t=themes[i%themes.length];
+    arr.push({day:i, topic:`${t} about ${i%2?topic:niche}`, hook:`${HOOKS[i%HOOKS.length]} ${topic.toLowerCase()}`, idea:`Share one specific ${t} that helped ${niche.toLowerCase()} — keep it concrete with a number or example.`, cta:CTAS[i%CTAS.length]});
+  }
+  return arr;
+}
+function impressions(d,r){
+  const clear=(d.headline&&d.help&&d.what);
+  return {
+    recruiter: clear?`Sees a defined ${d.who||'candidate'} with a clear focus — likely to read further.`:`Struggles to place you fast. Adds risk; may scroll past.`,
+    client: d.help?`Quickly understands you help ${d.help.toLowerCase()} — feels relevant.`:`Unsure if you're the right fit; value isn't obvious.`,
+    mentor: r.overall>=70?`Sees momentum and clarity worth investing time in.`:`Sees potential but an unfinished story.`,
+    current: clear?`A capable ${d.who||'professional'} working in ${d.what||'your field'}.`:`A profile that lists facts but doesn't position you.`,
+    should:`The go-to ${d.who||'specialist'} who helps ${d.help||'a specific audience'} ${d.problem?('overcome '+d.problem.toLowerCase()):'win'} — backed by proof.`
+  };
 }
 
-function renderReport(r,name){
-  const {eType,ranked,scores,brand1,brand2,skills,missing,blockerInsight,plan,a}=r;
+/* ---------- Priority engine ---------- */
+function priorities(cats){
+  const arr=Object.values(cats).map(c=>({label:c.label, gap:(10-c.score)*c.w*100, rec:c.rec, score:c.score, w:c.w}));
+  arr.sort((a,b)=>b.gap-a.gap);
+  const fmt=x=>({title:`Improve ${x.label}`, impact:Math.round(x.gap*10)/10, lift:Math.round(x.gap)+'%', rec:x.rec});
+  return {high:arr.slice(0,5).map(fmt), med:arr.slice(0,5).map(fmt), low:arr.slice(-5).map(fmt)};
+}
 
-  function scoreColor(v){return v>=80?'#10b981':v>=60?'#f59e0b':'#ef4444';}
-  function scoreBar(v,label){return`<div class="score-item"><div class="score-label">${label}</div><div class="score-bar-bg"><div class="score-bar-fill" style="width:${v}%;background:${scoreColor(v)}"></div></div><div class="score-num">${v}/100</div></div>`;}
-  function nicheCard(n,i){return`<div class="niche-card"><div class="niche-name">${i+1}. ${n.name}</div><div class="niche-meta"><span class="niche-tag tag-income">ðŸ’° ${n.income}</span><span class="niche-tag tag-diff">âš¡ ${n.diff}</span></div><div class="niche-why">${n.why||'This niche aligns closely with your declared skills and interests, giving you a natural head start over the competition.'}</div><div class="niche-step">ðŸ‘‰ First step: ${n.step}</div></div>`;}
-  function monthCard(title,items){return`<div class="month-card"><div class="month-title">${title}</div><div class="month-items">${items.map(i=>`â€¢ ${i}`).join('<br>')}</div></div>`;}
+/* ---------- Render ---------- */
+let radar, gauge;
+run.onclick=()=>{
+  const d={shot:shot.files.length>0, name:val('name'),headline:val('headline'),who:val('who'),what:val('what'),help:val('help'),problem:val('problem'),about:val('about'),skills:val('skills'),goal:val('goal')};
+  const r=analyze(d);
+  report.innerHTML=build(d,r);
+  report.classList.remove('hidden');
+  report.scrollIntoView({behavior:'smooth'});
+  setTimeout(()=>draw(d,r),60);
+};
+const val=id=>document.getElementById(id).value.trim();
 
-  const answerRows=[
-    {q:'Why I want to be successful',a:a.a0},{q:'Why entrepreneurship',a:a.a1},{q:'Why now',a:a.a2},
-    {q:'What stopped me before',a:a.cg3},{q:'Activities I lose time in',a:a.a4},{q:'What people ask me for help',a:a.a5},
-    {q:'Strongest skills',a:a.cg6},{q:'If money wasn\'t a concern',a:a.a7},{q:'Topics I enjoy',a:a.cg8},
-    {q:'Creators/books I follow',a:a.a9},{q:'Problems I enjoy solving',a:a.a10},{q:'I most love',a:a.r11},
-    {q:'Dream business',a:a.a12},{q:'Who I want to help',a:a.a13},{q:'In 5 years',a:a.a14},{q:'Proud in 10 years',a:a.a15}
-  ].filter(r=>r.a);
+function chip(s){return `<span class="text-xs px-2 py-0.5 rounded-full" style="background:${color(s)}1a;color:${color(s)}">${s.toFixed(1)}/10</span>`;}
 
-  return`
-  <div class="report-header">
-    <h2>Your Strength Report${name?', '+name.split(' ')[0]:''} ${eType.icon}</h2>
-    <p>Generated by StrengthMap Â· Based on your 16 answers</p>
-  </div>
+function build(d,r){
+  const [st,sc]=statusOf(r.overall);
+  const imp=impressions(d,r), pr=priorities(r.cats), hl=headlines(d);
+  const catCards=Object.values(r.cats).map((c,i)=>`
+    <div class="card glass rounded-2xl p-4 fade" style="animation-delay:${i*40}ms">
+      <div class="flex items-center justify-between mb-2">
+        <span class="text-sm font-semibold">${c.label}</span>${chip(c.score)}
+      </div>
+      <div class="h-2 rounded-full bg-slate-200/70 dark:bg-white/10 overflow-hidden mb-3">
+        <div class="bar h-full rounded-full" style="width:0%;background:${color(c.score)}" data-w="${c.score*10}"></div>
+      </div>
+      <p class="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">${c.rec}</p>
+      <div class="text-[10px] text-slate-400 mt-2">Weight ${Math.round(c.w*100)}%</div>
+    </div>`).join('');
 
-  <div class="report-card">
-    <div class="report-card-label">ðŸ§  Entrepreneur Type</div>
-    <div class="report-card-title">${eType.icon} ${eType.label}</div>
-    <div class="report-card-body">${eType.desc}<br><br><strong>Ideal Business Model:</strong> ${eType.model}</div>
-  </div>
+  const plist=(items,clr)=>items.map(p=>`
+    <div class="flex gap-3 items-start py-3 border-b border-slate-100 dark:border-white/5 last:border-0">
+      <div class="mt-0.5 w-2 h-2 rounded-full" style="background:${clr}"></div>
+      <div>
+        <div class="text-sm font-medium">${p.title} <span class="text-xs text-slate-400">· est. +${p.lift}</span></div>
+        <div class="text-xs text-slate-500 dark:text-slate-400">${p.rec}</div>
+      </div>
+    </div>`).join('');
 
-  <div class="report-card">
-    <div class="report-card-label">ðŸ’ª Top Strengths</div>
-    <div class="report-card-body"><ul>${skills.length?skills.map(s=>`<li><strong>${s}</strong></li>`).join(''):'<li>Based on your answers, your key strength is self-awareness and initiative â€” the foundation of every successful entrepreneur.</li>'}</ul></div>
-  </div>
+  const rew=hl.map(h=>`<li class="text-sm py-2 px-3 rounded-lg bg-white/60 dark:bg-white/5 mb-2">${h}</li>`).join('');
+  const abouts=['Recruiter','Client','Personal Brand'].map(t=>`
+    <div class="glass rounded-2xl p-4 mb-3">
+      <div class="text-xs font-semibold text-brand-500 mb-2">${t} version</div>
+      <pre class="whitespace-pre-wrap text-sm leading-relaxed font-body">${about(d,t)}</pre>
+    </div>`).join('');
+  const skills=skillRecs(d).map(s=>`<span class="text-xs px-2.5 py-1 rounded-full bg-brand-50 text-brand-700 dark:bg-white/10 dark:text-brand-100">${s}</span>`).join('');
+  const plan=contentPlan(d).map(p=>`
+    <tr class="border-b border-slate-100 dark:border-white/5">
+      <td class="py-2 pr-3 text-xs font-semibold text-brand-500">Day ${p.day}</td>
+      <td class="py-2 pr-3 text-xs">${p.topic}</td>
+      <td class="py-2 pr-3 text-xs text-slate-500 dark:text-slate-400">"${p.hook}…"</td>
+      <td class="py-2 text-xs text-slate-400">${p.cta}</td>
+    </tr>`).join('');
 
-  <div class="report-card">
-    <div class="report-card-label">ðŸŒŸ Personal Brand Statement</div>
-    <div class="brand-statement">"${brand1}"</div>
-    <div style="margin-top:10px"><div class="brand-statement">"${brand2}"</div></div>
-  </div>
+  // bonus meters
+  const meter=(label,v,clr)=>`
+    <div class="glass rounded-2xl p-4">
+      <div class="text-xs font-medium mb-2">${label}</div>
+      <div class="text-2xl font-bold disp" style="color:${clr}">${v}<span class="text-sm text-slate-400">/100</span></div>
+      <div class="h-1.5 rounded-full bg-slate-200/70 dark:bg-white/10 mt-2 overflow-hidden"><div class="bar h-full" style="width:0%;background:${clr}" data-w="${v}"></div></div>
+    </div>`;
+  const readiness=Math.min(100,Math.round(r.overall*0.6+ (r.cats.skills.score+r.cats.experience.score)*2));
+  const growth=Math.min(100,Math.round(r.overall*0.5+(r.cats.content.score+r.cats.brand.score)*2.5));
+  const opp=Math.min(100,Math.round(r.overall*0.55+(r.cats.headline.score+r.cats.seo.score)*2.2));
 
-  <div class="report-card">
-    <div class="report-card-label">ðŸŽ¯ Top 5 Niche Recommendations</div>
-    <div class="report-card-body">${ranked.map((n,i)=>nicheCard(n,i)).join('')}</div>
-  </div>
-
-  <div class="report-card">
-    <div class="report-card-label">ðŸ“Š Skill Gap Analysis</div>
-    <div class="report-card-body">
-      <strong>Your current strengths:</strong><ul>${skills.length?skills.map(s=>`<li>${s}</li>`).join(''):'<li>Communication & self-awareness</li>'}</ul>
-      <br><strong>Skills to develop next:</strong><ul>${missing.map(s=>`<li>${s}</li>`).join('')}</ul>
-      <br><strong>Recommended learning path:</strong><ul>
-        <li>Free: YouTube, Coursera, Google Digital Garage</li>
-        <li>Paid: Udemy courses in your top niche ($10â€“$15)</li>
-        <li>Community: Join a free LinkedIn group or Discord in your niche</li>
-        <li>Practice: Start a free project or help someone for a testimonial</li>
-      </ul>
-      <br><em>${blockerInsight}</em>
+  return `
+  <div class="fade">
+    <!-- Top summary -->
+    <div class="flex items-center justify-between flex-wrap gap-4 mt-8 mb-6 noprint">
+      <h2 class="disp text-2xl font-semibold">${d.name?d.name+"'s ":''}Profile Report</h2>
+      <div class="flex gap-2">
+        <button onclick="window.print()" class="px-3.5 py-2 rounded-lg text-sm font-medium glass">🖨 Print</button>
+        <button onclick="window.print()" class="px-3.5 py-2 rounded-lg text-sm font-medium glass">⬇ PDF</button>
+        <button onclick="dl()" class="px-3.5 py-2 rounded-lg text-sm font-semibold bg-brand-500 text-white">Download .txt</button>
+      </div>
     </div>
-  </div>
 
-  <div class="report-card">
-    <div class="report-card-label">ðŸ“… 90-Day Action Plan</div>
-    <div class="report-card-body">
-      ${monthCard('Month 1 â€” Foundation ðŸ—ï¸',plan.m1)}
-      ${monthCard('Month 2 â€” Build ðŸ”¨',plan.m2)}
-      ${monthCard('Month 3 â€” Launch ðŸš€',plan.m3)}
+    <div class="grid lg:grid-cols-3 gap-5 mb-8">
+      <div class="glass rounded-3xl p-6 flex flex-col items-center justify-center">
+        <canvas id="gauge" width="200" height="200"></canvas>
+        <div class="-mt-[120px] text-center pointer-events-none">
+          <div class="text-4xl font-bold disp">${r.overall}</div>
+          <div class="text-xs text-slate-400">/ 100</div>
+        </div>
+        <div class="mt-[78px] px-4 py-1.5 rounded-full text-sm font-semibold" style="background:${sc}1a;color:${sc}">${st}</div>
+      </div>
+      <div class="lg:col-span-2 glass rounded-3xl p-6">
+        <div class="text-sm font-semibold mb-3">Category radar</div>
+        <canvas id="radar" height="200"></canvas>
+      </div>
     </div>
-  </div>
 
-  <div class="report-card">
-    <div class="report-card-label">ðŸ† Success Scorecard</div>
-    <div class="score-grid">
-      ${scoreBar(scores.conf,'Confidence')}
-      ${scoreBar(scores.ready,'Entrepreneur Readiness')}
-      ${scoreBar(scores.skill,'Skill Readiness')}
-      ${scoreBar(scores.niche,'Niche Clarity')}
-      ${scoreBar(scores.brand,'Personal Brand')}
+    <!-- category cards -->
+    <h3 class="disp text-lg font-semibold mb-3">Category breakdown</h3>
+    <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-10">${catCards}</div>
+
+    <!-- impressions -->
+    <h3 class="disp text-lg font-semibold mb-3">First-impression analysis</h3>
+    <div class="grid md:grid-cols-3 gap-4 mb-4">
+      <div class="glass rounded-2xl p-4"><div class="text-xs font-semibold text-brand-500 mb-1">👔 Recruiter in 5s</div><p class="text-sm">${imp.recruiter}</p></div>
+      <div class="glass rounded-2xl p-4"><div class="text-xs font-semibold text-teal mb-1">🤝 Client in 5s</div><p class="text-sm">${imp.client}</p></div>
+      <div class="glass rounded-2xl p-4"><div class="text-xs font-semibold text-warn mb-1">🧭 Mentor in 5s</div><p class="text-sm">${imp.mentor}</p></div>
     </div>
-  </div>
-
-  <div class="report-card">
-    <div class="report-card-label">âœ… Final Recommendation</div>
-    <div class="report-card-body">
-      You are a <strong>${eType.label}</strong> with a natural fit for <strong>${eType.model}</strong>. Your strongest niche opportunity is <strong>${ranked[0]?.name||'digital services'}</strong> â€” start there. Your first step this week: ${ranked[0]?.step||'define your niche and reach out to your first potential client.'}
-      <br><br>You have everything you need to begin. The only thing between you and success is consistent action. Start small, stay consistent, and trust the process. <strong>Your time is now.</strong> ðŸš€
+    <div class="grid md:grid-cols-2 gap-4 mb-10">
+      <div class="glass rounded-2xl p-4"><div class="text-xs font-semibold mb-1">Your profile currently says</div><p class="text-sm text-slate-600 dark:text-slate-300">${imp.current}</p></div>
+      <div class="glass rounded-2xl p-4 border-l-2 border-teal"><div class="text-xs font-semibold mb-1 text-teal">It SHOULD say</div><p class="text-sm">${imp.should}</p></div>
     </div>
-  </div>
 
-  <div class="answers-summary">
-    <h4>ðŸ“ Your Answers Summary</h4>
-    ${answerRows.map(r=>`<div class="answer-row"><div class="answer-q">${r.q}</div><div class="answer-a">${r.a}</div></div>`).join('')}
-  </div>
+    <!-- priorities -->
+    <h3 class="disp text-lg font-semibold mb-3">Priority action plan</h3>
+    <div class="grid md:grid-cols-3 gap-4 mb-10">
+      <div class="glass rounded-2xl p-5"><div class="text-sm font-bold text-bad mb-1">High priority</div>${plist(pr.high,'#EF4444')}</div>
+      <div class="glass rounded-2xl p-5"><div class="text-sm font-bold text-warn mb-1">Medium priority</div>${plist(pr.med,'#F59E0B')}</div>
+      <div class="glass rounded-2xl p-5"><div class="text-sm font-bold text-ok mb-1">Low priority</div>${plist(pr.low,'#10B981')}</div>
+    </div>
 
-  <div class="action-btns">
-    <button class="btn-pdf" onclick="downloadPDF()">â¬‡ Download PDF Report</button>
-    <button class="btn-copy" onclick="copyReport()">ðŸ“‹ Copy Report Text</button>
+    <!-- rewrites -->
+    <h3 class="disp text-lg font-semibold mb-3">Profile rewrite engine</h3>
+    <div class="grid lg:grid-cols-2 gap-5 mb-6">
+      <div class="glass rounded-2xl p-5">
+        <div class="text-sm font-semibold mb-3">5 optimized headlines</div>
+        <ul>${rew}</ul>
+      </div>
+      <div>${abouts}</div>
+    </div>
+    <div class="glass rounded-2xl p-5 mb-3">
+      <div class="text-sm font-semibold mb-3">Top 25 skill recommendations</div>
+      <div class="flex flex-wrap gap-2">${skills}</div>
+    </div>
+    <div class="glass rounded-2xl p-5 mb-10">
+      <div class="text-sm font-semibold mb-1">SEO placement</div>
+      <p class="text-sm text-slate-600 dark:text-slate-300">Recruiters search exact terms like <b>${(d.skills||'your skills').split(',').slice(0,3).join(', ')}</b> and <b>${d.who||'your role'}</b>. Place these in: (1) headline first 50 chars, (2) About opening line, (3) job titles, (4) pinned skills.</p>
+    </div>
+
+    <!-- bonus meters -->
+    <h3 class="disp text-lg font-semibold mb-3">Growth meters</h3>
+    <div class="grid sm:grid-cols-3 gap-4 mb-10">
+      ${meter('Career Readiness',readiness,'#0A66C2')}
+      ${meter('Growth Potential',growth,'#14B8A6')}
+      ${meter('Opportunity Attraction',opp,'#10B981')}
+    </div>
+
+    <!-- content plan -->
+    <h3 class="disp text-lg font-semibold mb-3">30-day content plan</h3>
+    <div class="glass rounded-2xl p-5 overflow-x-auto mb-6">
+      <table class="w-full min-w-[640px]">
+        <thead><tr class="text-left text-xs text-slate-400"><th class="pb-2">Day</th><th class="pb-2">Topic</th><th class="pb-2">Hook</th><th class="pb-2">CTA</th></tr></thead>
+        <tbody>${plan}</tbody>
+      </table>
+    </div>
   </div>`;
 }
 
-let currentReportText = '';
-
-async function generateAndSend(){
-  const name=document.getElementById('user-name').value.trim();
-  const email=document.getElementById('user-email').value.trim();
-  const status=document.getElementById('status-msg');
-  const btn=document.getElementById('generate-btn');
-
-  if(!email||!email.includes('@')){
-    status.className='status-msg status-error';
-    status.textContent='Please enter a valid email address.';
-    return;
-  }
-
-  btn.disabled=true;
-  status.className='status-msg status-loading';
-  status.innerHTML='<span class="spinner"></span>Generating your report...';
-
-  const a=getAnswers();
-  const report=generateReport(a);
-  const html=renderReport(report,name);
-
-  // Show report
-  document.getElementById('pre-report').style.display='none';
-  const container=document.getElementById('report-container');
-  container.style.display='block';
-  container.innerHTML=html;
-
-  // Animate score bars
-  setTimeout(()=>{
-    document.querySelectorAll('.score-bar-fill').forEach(bar=>{
-      const w=bar.style.width;bar.style.width='0';
-      setTimeout(()=>bar.style.width=w,50);
-    });
-  },100);
-
-  // Build plain text for email
-  const scores=report.scores;
-  currentReportText=`STRENGTHMAP ENTREPRENEUR REPORT
-${name?'Name: '+name:''}
-Email: ${email}
-Generated: ${new Date().toLocaleDateString()}
-
-ENTREPRENEUR TYPE: ${report.eType.label}
-${report.eType.desc}
-
-IDEAL BUSINESS MODEL: ${report.eType.model}
-
-TOP STRENGTHS:
-${report.skills.length?report.skills.map(s=>'â€¢ '+s).join('\n'):'â€¢ Communication & Self-Awareness'}
-
-PERSONAL BRAND STATEMENT:
-"${report.brand1}"
-"${report.brand2}"
-
-TOP 5 NICHES:
-${report.ranked.map((n,i)=>`${i+1}. ${n.name}\n   Income: ${n.income} | Difficulty: ${n.diff}\n   First Step: ${n.step}`).join('\n\n')}
-
-SKILL GAP:
-Current: ${report.skills.join(', ')||'Building'}
-Missing: ${report.missing.join(', ')}
-
-90-DAY ACTION PLAN:
-MONTH 1: ${report.plan.m1.map(i=>'â€¢ '+i).join('\n')}
-MONTH 2: ${report.plan.m2.map(i=>'â€¢ '+i).join('\n')}
-MONTH 3: ${report.plan.m3.map(i=>'â€¢ '+i).join('\n')}
-
-SUCCESS SCORECARD:
-â€¢ Confidence: ${scores.conf}/100
-â€¢ Entrepreneur Readiness: ${scores.ready}/100
-â€¢ Skill Readiness: ${scores.skill}/100
-â€¢ Niche Clarity: ${scores.niche}/100
-â€¢ Personal Brand: ${scores.brand}/100
-
-ANSWERS SUMMARY:
-${[{q:'Why successful',a:a.a0},{q:'Why entrepreneur',a:a.a1},{q:'Why now',a:a.a2},{q:'Blockers',a:a.cg3},{q:'Flow activities',a:a.a4},{q:'Help with',a:a.a5},{q:'Skills',a:a.cg6},{q:'Free time',a:a.a7},{q:'Interests',a:a.cg8},{q:'Follows',a:a.a9},{q:'Problems',a:a.a10},{q:'Identity',a:a.r11},{q:'Dream biz',a:a.a12},{q:'Help who',a:a.a13},{q:'5 years',a:a.a14},{q:'10 years',a:a.a15}].filter(r=>r.a).map(r=>r.q+': '+r.a).join('\n')}`;
-
-  // Send emails
-  status.className='status-msg status-loading';
-  status.innerHTML='<span class="spinner"></span>Sending your report by email...';
-
-  try{
-    // Email to user
-    await emailjs.send(SERVICE_ID,TEMPLATE_ID,{
-      to_name: name||'Entrepreneur',
-      to_email: email,
-      from_name: 'StrengthMap',
-      subject: 'ðŸš€ Your Entrepreneur Strength Report is Ready!',
-      message: currentReportText,
-      user_name: name||'Entrepreneur',
-      user_email: email,
-      report_content: currentReportText
-    });
-    // Email copy to owner
-    await emailjs.send(SERVICE_ID,TEMPLATE_ID,{
-      to_name: 'Ahmed',
-      to_email: OWNER_EMAIL,
-      from_name: 'StrengthMap',
-      subject: 'ðŸ“¥ New Assessment: '+(name||email),
-      message: currentReportText,
-      user_name: name||'New User',
-      user_email: email,
-      report_content: currentReportText
-    });
-    status.className='status-msg status-success';
-    status.textContent='âœ… Report emailed to '+email+' successfully!';
-  }catch(err){
-    status.className='status-msg status-error';
-    status.textContent='Email delivery failed â€” but your report is shown below. Use the Copy or PDF buttons to save it.';
-    console.error(err);
-  }
-  btn.disabled=false;
+/* ---------- Charts ---------- */
+function draw(d,r){
+  document.querySelectorAll('.bar').forEach(b=>setTimeout(()=>b.style.width=b.dataset.w+'%',50));
+  const dark=root.classList.contains('dark');
+  const grid=dark?'rgba(255,255,255,.1)':'rgba(0,0,0,.08)';
+  const tick=dark?'#94a3b8':'#475569';
+  if(radar)radar.destroy(); if(gauge)gauge.destroy();
+  const cs=Object.values(r.cats);
+  radar=new Chart(document.getElementById('radar'),{type:'radar',
+    data:{labels:cs.map(c=>c.label),datasets:[{data:cs.map(c=>c.score),backgroundColor:'rgba(10,102,194,.18)',borderColor:'#0A66C2',pointBackgroundColor:'#14B8A6',borderWidth:2}]},
+    options:{plugins:{legend:{display:false}},scales:{r:{min:0,max:10,grid:{color:grid},angleLines:{color:grid},pointLabels:{color:tick,font:{size:10}},ticks:{display:false}}}}});
+  const [,sc]=statusOf(r.overall);
+  gauge=new Chart(document.getElementById('gauge'),{type:'doughnut',
+    data:{datasets:[{data:[r.overall,100-r.overall],backgroundColor:[sc,dark?'rgba(255,255,255,.08)':'#e2e8f0'],borderWidth:0,circumference:360}]},
+    options:{cutout:'78%',plugins:{legend:{display:false},tooltip:{enabled:false}}}});
 }
 
-function downloadPDF(){
-  const style=`<style>
-    body{font-family:Arial,sans-serif;color:#1a1a2e;max-width:760px;margin:0 auto;padding:32px;font-size:13px;line-height:1.6}
-    h1{font-size:22px;color:#534AB7;margin-bottom:4px}
-    h2{font-size:16px;color:#534AB7;border-bottom:2px solid #EEEDFE;padding-bottom:6px;margin:20px 0 10px}
-    h3{font-size:14px;color:#3C3489;margin:12px 0 6px}
-    p,li{margin:4px 0}ul{padding-left:18px}
-    .tag{display:inline-block;padding:2px 8px;border-radius:99px;font-size:11px;font-weight:600;margin-right:4px}
-    .tag-g{background:#d1fae5;color:#065f46}.tag-y{background:#fef3c7;color:#92400e}
-    .brand{background:#EEEDFE;border:1px solid #7F77DD;border-radius:8px;padding:12px;text-align:center;font-style:italic;font-weight:600;color:#3C3489;margin:8px 0}
-    .score{margin:4px 0}.score-bar{height:8px;background:#e2e2ef;border-radius:99px;margin:4px 0}
-    .score-fill{height:8px;border-radius:99px}
-    .niche{background:#f7f7fb;border:1px solid #e2e2ef;border-radius:8px;padding:12px;margin:8px 0}
-    .month{border-left:3px solid #534AB7;padding:8px 12px;margin:8px 0;background:#f7f7fb}
-    .ans{margin:6px 0;padding:6px 0;border-bottom:1px solid #e2e2ef}
-    .ans-q{font-size:11px;font-weight:700;color:#9999b0;text-transform:uppercase}
-    .footer{margin-top:32px;text-align:center;color:#9999b0;font-size:11px}
-  </style>`;
-
-  const r=generateReport(getAnswers());
-  const name=document.getElementById('user-name').value.trim();
-  const email=document.getElementById('user-email').value.trim();
-  const a=r.a;
-
-  const html=`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>StrengthMap Report</title>${style}</head><body>
-  <h1>ðŸš€ StrengthMap Entrepreneur Report</h1>
-  <p>${name?'<strong>'+name+'</strong> Â· ':''}${email} Â· ${new Date().toLocaleDateString()}</p>
-  <h2>Entrepreneur Type: ${r.eType.icon} ${r.eType.label}</h2>
-  <p>${r.eType.desc}</p><p><strong>Ideal Model:</strong> ${r.eType.model}</p>
-  <h2>ðŸ’ª Top Strengths</h2><ul>${r.skills.length?r.skills.map(s=>`<li>${s}</li>`).join(''):'<li>Communication & Self-Awareness</li>'}</ul>
-  <h2>ðŸŒŸ Personal Brand Statement</h2>
-  <div class="brand">"${r.brand1}"</div><div class="brand">"${r.brand2}"</div>
-  <h2>ðŸŽ¯ Top 5 Niches</h2>
-  ${r.ranked.map((n,i)=>`<div class="niche"><h3>${i+1}. ${n.name}</h3><span class="tag tag-g">ðŸ’° ${n.income}</span><span class="tag tag-y">âš¡ ${n.diff}</span><p>${n.why||'Strong alignment with your skills and interests.'}</p><p><strong>ðŸ‘‰ First step:</strong> ${n.step}</p></div>`).join('')}
-  <h2>ðŸ“Š Skill Gap Analysis</h2>
-  <p><strong>Current strengths:</strong> ${r.skills.join(', ')||'Communication, Self-awareness'}</p>
-  <p><strong>Skills to develop:</strong> ${r.missing.join(', ')}</p>
-  <p><em>${r.blockerInsight}</em></p>
-  <h2>ðŸ“… 90-Day Action Plan</h2>
-  <div class="month"><strong>Month 1 â€” Foundation</strong><br>${r.plan.m1.map(i=>'â€¢ '+i).join('<br>')}</div>
-  <div class="month"><strong>Month 2 â€” Build</strong><br>${r.plan.m2.map(i=>'â€¢ '+i).join('<br>')}</div>
-  <div class="month"><strong>Month 3 â€” Launch</strong><br>${r.plan.m3.map(i=>'â€¢ '+i).join('<br>')}</div>
-  <h2>ðŸ† Success Scorecard</h2>
-  ${[['Confidence',r.scores.conf],['Entrepreneur Readiness',r.scores.ready],['Skill Readiness',r.scores.skill],['Niche Clarity',r.scores.niche],['Personal Brand',r.scores.brand]].map(([l,v])=>`<div class="score"><strong>${l}:</strong> ${v}/100<div class="score-bar"><div class="score-fill" style="width:${v}%;background:${v>=80?'#10b981':v>=60?'#f59e0b':'#ef4444'}"></div></div></div>`).join('')}
-  <h2>ðŸ“ Your Answers</h2>
-  ${[{q:'Why successful',v:a.a0},{q:'Why entrepreneur',v:a.a1},{q:'Why now',v:a.a2},{q:'Blockers',v:a.cg3},{q:'Flow activities',v:a.a4},{q:'Help with',v:a.a5},{q:'Skills',v:a.cg6},{q:'Free time',v:a.a7},{q:'Interests',v:a.cg8},{q:'Follows',v:a.a9},{q:'Problems',v:a.a10},{q:'Identity',v:a.r11},{q:'Dream biz',v:a.a12},{q:'Help who',v:a.a13},{q:'5 years',v:a.a14},{q:'10 years',v:a.a15}].filter(r=>r.v).map(r=>`<div class="ans"><div class="ans-q">${r.q}</div><div>${r.v}</div></div>`).join('')}
-  <div class="footer">Generated by StrengthMap Â· sakhi-pk.github.io/self-identity-assessment</div>
-  </body></html>`;
-
-  const w=window.open('','_blank');
-  w.document.write(html);
-  w.document.close();
-  setTimeout(()=>w.print(),500);
-}
-
-function copyReport(){
-  navigator.clipboard.writeText(currentReportText||'Complete the assessment first.').then(()=>{
-    const btn=event.target;btn.textContent='âœ… Copied!';
-    setTimeout(()=>btn.textContent='ðŸ“‹ Copy Report Text',2000);
-  });
+/* ---------- Download ---------- */
+function dl(){
+  const t=report.innerText;
+  const blob=new Blob([t],{type:'text/plain'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='linkedin-scorecard.txt';a.click();
 }
 </script>
 </body>
